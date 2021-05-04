@@ -14,4 +14,5 @@
 Все изменения запушены в github.
 
 Адрес образа в Vagrant Cloud - https://app.vagrantup.com/hataldir/boxes/centos-7-5
+
 Репозиторий в github - https://github.com/hataldir/manual_kernel_update
