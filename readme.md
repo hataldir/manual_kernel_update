@@ -1,6 +1,7 @@
 ## Домашнее задание 1
 
 Установлены Vagrant, Packer и VirtualBox
+
 Сделан форк репозитория dmitry-lyutenko/manual_kernel_update и затем склонирован на рабочую машину.
 
 Заапущена виртуалка из содержащегося в репозитории Vagrantfile.
