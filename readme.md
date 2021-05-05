@@ -28,7 +28,7 @@ Vagrantfile - https://github.com/hataldir/manual_kernel_update/blob/master/packe
 
 На рейде создана GPT и пять разделов - /dev/md0p[1-5]. Разделы отформатированы и смонтированы.
 
-Файлы находятся в каталоге "lesson 2"
+Файлы находятся в каталоге https://github.com/hataldir/manual_kernel_update/tree/master/lesson2 
 
 Дополнительное задание:
 
