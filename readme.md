@@ -28,6 +28,8 @@ Vagrantfile - https://github.com/hataldir/manual_kernel_update/blob/master/packe
 
 На рейде создана GPT и пять разделов - /dev/md0p[1-5]. Разделы отформатированы и смонтированы.
 
+Файлы находятся в каталоге "lesson 2"
+
 Дополнительное задание:
 
 Написан скрипт provision.sh, создающий рейд и разделы на нем, В Vagrantfile добавлена строка  server.vm.provision 'shell', path: 'provision.sh'.
