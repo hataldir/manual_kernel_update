@@ -35,3 +35,12 @@ Vagrantfile - https://github.com/hataldir/manual_kernel_update/blob/master/packe
 Написан скрипт provision.sh, создающий рейд и разделы на нем, В Vagrantfile добавлена строка  server.vm.provision 'shell', path: 'provision.sh'.
 
 
+## Домашнее задание 3
+
+Скачан Vagrantfile для машины с LVM. 
+
+Раздел для / уменьшен с 40 Gb до 8 Gb с помощью временного раздела /dev/vg_root/lv_root
+
+Для /var создан новый раздел, зеркало.
+
+Для /home создан раздел и снапшот, протестировано восстановление со снапшота
