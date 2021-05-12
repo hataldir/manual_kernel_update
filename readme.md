@@ -44,3 +44,37 @@ Vagrantfile - https://github.com/hataldir/manual_kernel_update/blob/master/packe
 Для /var создан новый раздел, зеркало.
 
 Для /home создан раздел и снапшот, протестировано восстановление со снапшота
+
+
+## Домашнее задание 4
+
+Скачан Vagrantfile для машины с ZFS.
+
+Логи выполнения всех команд в файле https://github.com/hataldir/manual_kernel_update/tree/master/lesson4/result.txt
+
+1. Определить алгоритм с наилучшим сжатием
+
+Созданы 4 файловые системы disk1..disk4, им назначены типы сжатия gzip, zle, lzjb, lz4. Скачан текстовый файл размером 3.4 Мб, скопирован на каждый из разделов и определен лучший тип сжатия - gzip (disk1):
+Filesystem      Size  Used Avail Use% Mounted on
+pool1/disk1     4.6G  1.3M  4.6G   1% /pool1/disk1
+pool1/disk2     4.6G  3.3M  4.6G   1% /pool1/disk2
+pool1/disk3     4.6G  2.5M  4.6G   1% /pool1/disk3
+pool1/disk4     4.6G  2.0M  4.6G   1% /pool1/disk4
+
+2.  Определить настройки pool’a
+
+Скачан архив с дисками, импортирован. Определены настройки:
+
+Hазмер хранилища - 480М
+
+Тип pool - mirror
+
+Значение recordsize - 128К
+
+Какое сжатие используется - zle
+
+Какая контрольная сумма используется - sha256
+
+3. Найти сообщение от преподавателей 
+
+Скачан снапшот, импортирован. Текст сообщения: https://github.com/sindresorhus/awesome

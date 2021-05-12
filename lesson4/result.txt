@@ -1,0 +1,236 @@
+[root@server vagrant]# zpool create pool1 sdb sdc sde sdf sdg
+[root@server vagrant]# zpool list
+NAME    SIZE  ALLOC   FREE  CKPOINT  EXPANDSZ   FRAG    CAP  DEDUP    HEALTH  ALTROOT
+pool1  4.69G  94.5K  4.69G        -         -     0%     0%  1.00x    ONLINE  -
+[root@server vagrant]# zfs create pool1/disk1
+[root@server vagrant]# zfs create pool1/disk2
+[root@server vagrant]# zfs create pool1/disk3
+[root@server vagrant]# zfs create pool1/disk4
+[root@server vagrant]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+devtmpfs        474M     0  474M   0% /dev
+tmpfs           490M     0  490M   0% /dev/shm
+tmpfs           490M   19M  471M   4% /run
+tmpfs           490M     0  490M   0% /sys/fs/cgroup
+/dev/sda1        10G  3.3G  6.8G  33% /
+tmpfs            98M     0   98M   0% /run/user/1000
+pool1           4.6G  128K  4.6G   1% /pool1
+pool1/disk1     4.6G  128K  4.6G   1% /pool1/disk1
+pool1/disk2     4.6G  128K  4.6G   1% /pool1/disk2
+pool1/disk3     4.6G  128K  4.6G   1% /pool1/disk3
+pool1/disk4     4.6G  128K  4.6G   1% /pool1/disk4
+[root@server vagrant]#
+[root@server vagrant]# zfs set compression=gzip pool1/disk1
+[root@server vagrant]# zfs set compression=zle pool1/disk2
+[root@server vagrant]# zfs set compression=lzjb pool1/disk3
+[root@server vagrant]# zfs set compression=lz4 pool1/disk4
+[root@server vagrant]#
+[root@server vagrant]# cp war-and-peace.txt /pool1/disk1
+[root@server vagrant]# cp war-and-peace.txt /pool1/disk2
+[root@server vagrant]# cp war-and-peace.txt /pool1/disk3
+[root@server vagrant]# cp war-and-peace.txt /pool1/disk4
+[root@server vagrant]#
+[root@server vagrant]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+devtmpfs        474M     0  474M   0% /dev
+tmpfs           490M     0  490M   0% /dev/shm
+tmpfs           490M   19M  471M   4% /run
+tmpfs           490M     0  490M   0% /sys/fs/cgroup
+/dev/sda1        10G  3.3G  6.8G  33% /
+tmpfs            98M     0   98M   0% /run/user/1000
+pool1           4.6G  3.4M  4.6G   1% /pool1
+pool1/disk1     4.6G  1.3M  4.6G   1% /pool1/disk1
+pool1/disk2     4.6G  3.3M  4.6G   1% /pool1/disk2
+pool1/disk3     4.6G  2.5M  4.6G   1% /pool1/disk3
+pool1/disk4     4.6G  2.0M  4.6G   1% /pool1/disk4
+
+Наилучшее сжатие - gzip
+
+
+
+
+[root@server vagrant]# wget "https://drive.google.com/u/0/uc?id=1KRBNW33QWqbvbVHa3hLJivOAt60yukkg&export=download"
+--2021-05-12 06:37:02--  https://drive.google.com/u/0/uc?id=1KRBNW33QWqbvbVHa3hLJivOAt60yukkg&export=download
+Resolving drive.google.com (drive.google.com)... 64.233.164.194
+Connecting to drive.google.com (drive.google.com)|64.233.164.194|:443... connected.
+HTTP request sent, awaiting response... 302 Moved Temporarily
+Location: https://doc-0c-bo-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/vt301gqsai01jp2crpll2232eb3ncvt6/1620801375000/16189157874053420687/*/1KRBNW33QWqbvbVHa3hLJivOAt60yukkg?e=download [following]
+Warning: wildcards not supported in HTTP.
+--2021-05-12 06:37:06--  https://doc-0c-bo-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/vt301gqsai01jp2crpll2232eb3ncvt6/1620801375000/16189157874053420687/*/1KRBNW33QWqbvbVHa3hLJivOAt60yukkg?e=download
+Resolving doc-0c-bo-docs.googleusercontent.com (doc-0c-bo-docs.googleusercontent.com)... 142.250.150.132
+Connecting to doc-0c-bo-docs.googleusercontent.com (doc-0c-bo-docs.googleusercontent.com)|142.250.150.132|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [application/x-gzip]
+Saving to: 'uc?id=1KRBNW33QWqbvbVHa3hLJivOAt60yukkg&export=download'
+
+uc?id=1KRBNW33QWqbvbVHa3hLJivOAt60yukkg&export=download         [   <=>                                                                                                                                   ]   6.94M  13.3MB/s    in 0.5s
+
+2021-05-12 06:37:07 (13.3 MB/s) - 'uc?id=1KRBNW33QWqbvbVHa3hLJivOAt60yukkg&export=download' saved [7275140]
+
+[root@server vagrant]# ls -lah
+total 18M
+drwx------. 3 vagrant vagrant  225 May 12 06:37  .
+drwxr-xr-x. 3 root    root      21 Jun 11  2020  ..
+-rw-r--r--. 1 vagrant vagrant   18 Nov  8  2019  .bash_logout
+-rw-r--r--. 1 vagrant vagrant  141 Nov  8  2019  .bash_profile
+-rw-r--r--. 1 vagrant vagrant  312 Nov  8  2019  .bashrc
+drwx------. 2 vagrant vagrant   29 May 11 17:25  .ssh
+-rw-r--r--. 1 root    root    7.0M May 12 06:36 'uc?id=1KRBNW33QWqbvbVHa3hLJivOAt60yukkg'
+-rw-r--r--. 1 root    root    3.2M May 12 06:33  war-and-peace.txt
+[root@server vagrant]# mv 'uc?id=1KRBNW33QWqbvbVHa3hLJivOAt60yukkg' task.tgz
+[root@server vagrant]# gzip -d task.tgz
+[root@server vagrant]# tar -xf task.tar
+[root@server vagrant]# rm -rf task.tar
+[root@server vagrant]# ls -lah
+total 3.2M
+drwx------. 4 vagrant vagrant  118 May 12 06:41 .
+drwxr-xr-x. 3 root    root      21 Jun 11  2020 ..
+-rw-r--r--. 1 vagrant vagrant   18 Nov  8  2019 .bash_logout
+-rw-r--r--. 1 vagrant vagrant  141 Nov  8  2019 .bash_profile
+-rw-r--r--. 1 vagrant vagrant  312 Nov  8  2019 .bashrc
+drwx------. 2 vagrant vagrant   29 May 11 17:25 .ssh
+-rw-r--r--. 1 root    root    3.2M May 12 06:33 war-and-peace.txt
+drwxr-xr-x. 2 root    root      32 May 15  2020 zpoolexport
+[root@server vagrant]# zpool import -d ${PWD}/zpoolexport
+   pool: otus
+     id: 6554193320433390805
+  state: ONLINE
+ action: The pool can be imported using its name or numeric identifier.
+ config:
+
+        otus                                 ONLINE
+          mirror-0                           ONLINE
+            /home/vagrant/zpoolexport/filea  ONLINE
+            /home/vagrant/zpoolexport/fileb  ONLINE
+[root@server vagrant]# zpool import -d ${PWD}/zpoolexport otus
+[root@server vagrant]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+devtmpfs        474M     0  474M   0% /dev
+tmpfs           490M     0  490M   0% /dev/shm
+tmpfs           490M   19M  471M   4% /run
+tmpfs           490M     0  490M   0% /sys/fs/cgroup
+/dev/sda1        10G  4.3G  5.8G  43% /
+tmpfs            98M     0   98M   0% /run/user/1000
+pool1           4.6G  3.4M  4.6G   1% /pool1
+pool1/disk1     4.6G  1.3M  4.6G   1% /pool1/disk1
+pool1/disk2     4.6G  3.3M  4.6G   1% /pool1/disk2
+pool1/disk3     4.6G  2.5M  4.6G   1% /pool1/disk3
+pool1/disk4     4.6G  2.0M  4.6G   1% /pool1/disk4
+otus            350M  128K  350M   1% /otus
+otus/hometask2  352M  2.0M  350M   1% /otus/hometask2
+
+Командами zfs определить настройки
+размер хранилища
+[root@server vagrant]# zpool get size
+NAME   PROPERTY  VALUE  SOURCE
+otus   size      480M   -
+pool1  size      4.69G  -
+
+тип pool
+
+[root@server vagrant]# zpool status otus
+  pool: otus
+ state: ONLINE
+  scan: none requested
+config:
+
+        NAME                                 STATE     READ WRITE CKSUM
+        otus                                 ONLINE       0     0     0
+          mirror-0                           ONLINE       0     0     0
+            /home/vagrant/zpoolexport/filea  ONLINE       0     0     0
+            /home/vagrant/zpoolexport/fileb  ONLINE       0     0     0
+
+errors: No known data errors
+
+значение recordsize
+[root@server vagrant]# zfs get recordsize
+NAME            PROPERTY    VALUE    SOURCE
+otus            recordsize  128K     local
+otus/hometask2  recordsize  128K     inherited from otus
+pool1           recordsize  128K     default
+pool1/disk1     recordsize  128K     default
+pool1/disk2     recordsize  128K     default
+pool1/disk3     recordsize  128K     default
+pool1/disk4     recordsize  128K     default
+
+какое сжатие используется
+
+[root@server vagrant]# zfs get compression
+NAME            PROPERTY     VALUE     SOURCE
+otus            compression  zle       local
+otus/hometask2  compression  zle       inherited from otus
+pool1           compression  off       default
+pool1/disk1     compression  gzip      local
+pool1/disk2     compression  zle       local
+pool1/disk3     compression  lzjb      local
+pool1/disk4     compression  lz4       local
+
+какая контрольная сумма используется 
+
+[root@server vagrant]# zfs get checksum
+NAME            PROPERTY  VALUE      SOURCE
+otus            checksum  sha256     local
+otus/hometask2  checksum  sha256     inherited from otus
+pool1           checksum  on         default
+pool1/disk1     checksum  on         default
+pool1/disk2     checksum  on         default
+pool1/disk3     checksum  on         default
+pool1/disk4     checksum  on         default
+
+
+
+[root@server vagrant]# wget "https://drive.google.com/u/0/uc?id=1gH8gCL9y7Nd5Ti3IRmplZPF1XjzxeRAG&export=download"
+--2021-05-12 07:03:08--  https://drive.google.com/u/0/uc?id=1gH8gCL9y7Nd5Ti3IRmplZPF1XjzxeRAG&export=download
+Resolving drive.google.com (drive.google.com)... 64.233.164.194
+Connecting to drive.google.com (drive.google.com)|64.233.164.194|:443... connected.
+HTTP request sent, awaiting response... 302 Moved Temporarily
+Location: https://doc-00-bo-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/mj60va8rqkaq2b9ptib8kftss01a4ne8/1620802950000/16189157874053420687/*/1gH8gCL9y7Nd5Ti3IRmplZPF1XjzxeRAG?e=download [following]
+Warning: wildcards not supported in HTTP.
+--2021-05-12 07:03:09--  https://doc-00-bo-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/mj60va8rqkaq2b9ptib8kftss01a4ne8/1620802950000/16189157874053420687/*/1gH8gCL9y7Nd5Ti3IRmplZPF1XjzxeRAG?e=download
+Resolving doc-00-bo-docs.googleusercontent.com (doc-00-bo-docs.googleusercontent.com)... 142.250.150.132
+Connecting to doc-00-bo-docs.googleusercontent.com (doc-00-bo-docs.googleusercontent.com)|142.250.150.132|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [application/octet-stream]
+Saving to: 'uc?id=1gH8gCL9y7Nd5Ti3IRmplZPF1XjzxeRAG&export=download'
+
+uc?id=1gH8gCL9y7Nd5Ti3IRmplZPF1XjzxeRAG&export=download         [   <=>                                                                                                                                   ]   5.18M  9.66MB/s    in 0.5s
+
+2021-05-12 07:03:11 (9.66 MB/s) - 'uc?id=1gH8gCL9y7Nd5Ti3IRmplZPF1XjzxeRAG&export=download' saved [5432736]
+
+[root@server vagrant]# ls
+'uc?id=1gH8gCL9y7Nd5Ti3IRmplZPF1XjzxeRAG&export=download'   war-and-peace.txt   zpoolexport
+[root@server vagrant]# ls -lah
+total 8.4M
+drwx------. 4 vagrant vagrant  181 May 12 07:03  .
+drwxr-xr-x. 3 root    root      21 Jun 11  2020  ..
+-rw-r--r--. 1 vagrant vagrant   18 Nov  8  2019  .bash_logout
+-rw-r--r--. 1 vagrant vagrant  141 Nov  8  2019  .bash_profile
+-rw-r--r--. 1 vagrant vagrant  312 Nov  8  2019  .bashrc
+drwx------. 2 vagrant vagrant   29 May 11 17:25  .ssh
+-rw-r--r--. 1 root    root    5.2M May 12 07:03 'uc?id=1gH8gCL9y7Nd5Ti3IRmplZPF1XjzxeRAG&export=download'
+-rw-r--r--. 1 root    root    3.2M May 12 06:33  war-and-peace.txt
+drwxr-xr-x. 2 root    root      32 May 15  2020  zpoolexport
+[root@server vagrant]# mv  'uc?id=1gH8gCL9y7Nd5Ti3IRmplZPF1XjzxeRAG&export=download' otus_task2.file
+
+[root@server vagrant]# zfs receive otus/storage@task2 < otus_task2.file
+[root@server vagrant]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+devtmpfs        474M     0  474M   0% /dev
+tmpfs           490M     0  490M   0% /dev/shm
+tmpfs           490M   19M  471M   4% /run
+tmpfs           490M     0  490M   0% /sys/fs/cgroup
+/dev/sda1        10G  4.3G  5.8G  43% /
+tmpfs            98M     0   98M   0% /run/user/1000
+pool1           4.6G  3.4M  4.6G   1% /pool1
+pool1/disk1     4.6G  1.3M  4.6G   1% /pool1/disk1
+pool1/disk2     4.6G  3.3M  4.6G   1% /pool1/disk2
+pool1/disk3     4.6G  2.5M  4.6G   1% /pool1/disk3
+pool1/disk4     4.6G  2.0M  4.6G   1% /pool1/disk4
+otus            347M  128K  347M   1% /otus
+otus/hometask2  349M  2.0M  347M   1% /otus/hometask2
+otus/storage    350M  2.9M  347M   1% /otus/storage
+
+[root@server vagrant]# find /otus/storage -name secret_message
+/otus/storage/task1/file_mess/secret_message
+[root@server vagrant]# cat /otus/storage/task1/file_mess/secret_message
+https://github.com/sindresorhus/awesome
