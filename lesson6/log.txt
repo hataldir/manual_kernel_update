@@ -2,7 +2,7 @@
 yum install -y redhat-lsb-core wget rpmdevtools rpm-build createrepo yum-utils gcc
 Вывод yum неинтересен.
 
-## Скачиваем ираспаковываем  nginx
+## Скачиваем и распаковываем  nginx
 
 [root@kernel-update vagrant]# wget https://nginx.org/packages/centos/7/SRPMS/nginx-1.14.1-1.el7_4.ngx.src.rpm
 --2021-05-28 14:57:32--  https://nginx.org/packages/centos/7/SRPMS/nginx-1.14.1-1.el7_4.ngx.src.rpm
