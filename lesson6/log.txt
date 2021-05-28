@@ -1,8 +1,8 @@
-## Установлены указанные в методичке пакеты и неуказанный gcc
+## Устанавливаем указанные в методичке пакеты и неуказанный gcc
 yum install -y redhat-lsb-core wget rpmdevtools rpm-build createrepo yum-utils gcc
 Вывод yum неинтересен.
 
-## Скачан и распакован nginx
+## Скачиваем ираспаковываем  nginx
 
 [root@kernel-update vagrant]# wget https://nginx.org/packages/centos/7/SRPMS/nginx-1.14.1-1.el7_4.ngx.src.rpm
 --2021-05-28 14:57:32--  https://nginx.org/packages/centos/7/SRPMS/nginx-1.14.1-1.el7_4.ngx.src.rpm
@@ -70,7 +70,7 @@ dr-xr-xr-x. 17 root root  240 Apr 30  2020 ..
 drwxr-xr-x.  4 root root   34 May 28 14:57 rpmbuild
 [root@kernel-update ~]#
 
-## Скачан и распакован openssl
+## Скачиваем и распаковываем openssl
 
 [root@kernel-update ~]# wget https://www.openssl.org/source/latest.tar.gz
 --2021-05-28 15:00:08--  https://www.openssl.org/source/latest.tar.gz
@@ -96,7 +96,7 @@ openssl-1.1.1k/
 openssl-1.1.1k/util/unlocal_shlib.com.in
 [root@kernel-update ~]#
 
-## Установлены зависиомсти из nginx.spec
+## Устанавливаем зависимости из nginx.spec
 
 [root@kernel-update ~]# yum-builddep rpmbuild/SPECS/nginx.spec
 Loaded plugins: fastestmirror
