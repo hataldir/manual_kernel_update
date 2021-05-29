@@ -1,0 +1,79 @@
+Текущее состояние:
+
+[root@lvm vagrant]# vgs
+  VG         #PV #LV #SN Attr   VSize   VFree
+  VolGroup00   1   2   0 wz--n- <38.97g    0
+
+Переименование:
+
+[root@lvm vagrant]# vgrename VolGroup00 OtusRoot
+  Volume group "VolGroup00" successfully renamed to "OtusRoot"
+
+Изменение имени в конфигах:
+
+[root@lvm etc]# sed -i 's\VolGroup00\OtusRoot\g' /etc/fstab
+[root@lvm grub2]# grep Otus /etc/fstab
+/dev/mapper/OtusRoot-LogVol00 /                       xfs     defaults        0 0
+/dev/mapper/OtusRoot-LogVol01 swap                    swap    defaults        0 0
+
+[root@lvm default]# sed -i 's\VolGroup00\OtusRoot\g' /etc/default/grub
+[root@lvm grub2]# grep Otus /etc/default/grub
+GRUB_CMDLINE_LINUX="no_timer_check console=tty0 console=ttyS0,115200n8 net.ifnames=0 biosdevname=0 elevator=noop crashkernel=auto rd.lvm.lv=OtusRoot/LogVol00 rd.lvm.lv=OtusRoot/LogVol01 rhgb quiet"
+[root@lvm grub2]# sed -i 's\VolGroup00\OtusRoot\g' /boot/grub2/grub.cfg
+[root@lvm grub2]# grep Otus /boot/grub2/grub.cfg
+        linux16 /vmlinuz-3.10.0-862.2.3.el7.x86_64 root=/dev/mapper/OtusRoot-LogVol00 ro no_timer_check console=tty0 console=ttyS0,115200n8 net.ifnames=0 biosdevname=0 elevator=noop crashkernel=auto rd.lvm.lv=OtusRoot/LogVol00 rd.lvm.lv OtusRoot/LogVol01 rhgb quiet
+
+Переоздание initrd:
+
+[root@lvm grub2]#  mkinitrd -f -v /boot/initramfs-$(uname -r).img $(uname -r)
+Executing: /sbin/dracut -f -v /boot/initramfs-3.10.0-862.2.3.el7.x86_64.img 3.10.0-862.2.3.el7.x86_64
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found!
+[skipped]
+*** Creating image file ***
+*** Creating image file done ***
+*** Creating initramfs image file '/boot/initramfs-3.10.0-862.2.3.el7.x86_64.img' done ***
+
+После перезагрузки:
+
+[root@lvm vagrant]# vgs
+  VG       #PV #LV #SN Attr   VSize   VFree
+  OtusRoot   1   2   0 wz--n- <38.97g    0
+
+Добавление модуля в initrd:
+
+[root@lvm vagrant]# mkdir /usr/lib/dracut/modules.d/01test
+[root@lvm vagrant]# cd /usr/lib/dracut/modules.d/01test
+
+[root@lvm 01test]# wget https://gist.githubusercontent.com/lalbrekht/e51b2580b47bb5a150bd1a002f16ae85/raw/80060b7b300e193c187bbcda4d8fdf0e1c066af9/gistfile1.txt -O module-setup.sh
+--2021-05-29 05:03:02--  https://gist.githubusercontent.com/lalbrekht/e51b2580b47bb5a150bd1a002f16ae85/raw/80060b7b300e193c187bbcda4d8fdf0e1c066af9/gistfile1.txt
+Resolving gist.githubusercontent.com (gist.githubusercontent.com)... 185.199.109.133, 185.199.110.133, 185.199.111.133, ...
+Connecting to gist.githubusercontent.com (gist.githubusercontent.com)|185.199.109.133|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 126 [text/plain]
+Saving to: ‘module-setup.sh’
+
+100%[===================================================================================================================================================================================================>] 126         --.-K/s   in 0s
+
+2021-05-29 05:03:02 (4.31 MB/s) - ‘module-setup.sh’ saved [126/126]
+
+[root@lvm 01test]# wget https://gist.githubusercontent.com/lalbrekht/ac45d7a6c6856baea348e64fac43faf0/raw/69598efd5c603df310097b52019dc979e2cb342d/gistfile1.txt -O test.sh
+--2021-05-29 05:04:05--  https://gist.githubusercontent.com/lalbrekht/ac45d7a6c6856baea348e64fac43faf0/raw/69598efd5c603df310097b52019dc979e2cb342d/gistfile1.txt
+Resolving gist.githubusercontent.com (gist.githubusercontent.com)... 185.199.110.133, 185.199.111.133, 185.199.108.133, ...
+Connecting to gist.githubusercontent.com (gist.githubusercontent.com)|185.199.110.133|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 334 [text/plain]
+Saving to: ‘test.sh’
+
+100%[===================================================================================================================================================================================================>] 334         --.-K/s   in 0s
+
+2021-05-29 05:04:06 (5.53 MB/s) - ‘test.sh’ saved [334/334]
+
+[root@lvm 01test]# mkinitrd -f -v /boot/initramfs-$(uname -r).img $(uname -r)
+Executing: /sbin/dracut -f -v /boot/initramfs-3.10.0-862.2.3.el7.x86_64.img 3.10.0-862.2.3.el7.x86_64
+[skipped]
+*** Creating image file ***
+*** Creating image file done ***
+*** Creating initramfs image file '/boot/initramfs-3.10.0-862.2.3.el7.x86_64.img' done ***
+[root@lvm 01test]#
+[root@lvm 01test]# lsinitrd -m /boot/initramfs-$(uname -r).img | grep test
+test
