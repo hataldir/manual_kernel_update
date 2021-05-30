@@ -12,3 +12,6 @@ Y запрашиваемых адресов страниц с наибольши
 Все ошибки c момента последнего запуска. Ошибками считаются записи с кодом возврата 4xx.
 
 
+Скрипт в файле https://github.com/hataldir/manual_kernel_update/blob/master/lesson9/log-analyze.sh
+
+Отчет в https://github.com/hataldir/manual_kernel_update/blob/master/lesson9/report.txt
