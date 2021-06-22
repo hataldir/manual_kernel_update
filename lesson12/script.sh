@@ -18,7 +18,7 @@ mv /tmp/51-docker.rules /etc/polkit-1/rules.d/51-docker.rules
 chmod +x /usr/local/bin/test_login.sh
 
 yum install -y epel-release
-#yum install -y docker
+yum install -y docker
 systemctl enable docker
 systemctl start docker
 groupadd docker
