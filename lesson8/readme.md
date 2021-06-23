@@ -1,4 +1,4 @@
-## Домашнее задание 9
+## Домашнее задание 8
 
 1. Написать service, который будет раз в 30 секунд мониторить лог на предмет наличия ключевого слова (файл лога и ключевое слово должны задаваться в /etc/sysconfig).
 
@@ -15,4 +15,4 @@
 Юнит находится в /usr/lib/systemd/system/httpd@.service. В файлах /etc/httpd/httpd-first и httpd-second указаны параметры для него - пути к разным конфигам httpd-first.conf и httpd-second.conf.
 В конфиге httpd.conf изменен пот на 8080 и добавлен параметр PidFile, указывающий на нестандартный путь.
 Вагрант копирует файлы httpd.service, httpd-first, httpd-second, скриптом script3.sh раскладывает их в нужные места, затем копирует конфиг httpd.conf в два новых и правит конфиг httpd-second.conf.
-Потом запускает два инстанса сервиса - httpd@first и httpd@second
+Потом запускает два инстанса сервиса - httpd@first и httpd@second.
