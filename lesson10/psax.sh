@@ -22,7 +22,9 @@ for i in "${pids[@]}"; do
 	statt=(`cat /proc/$i/stat`) 
 
 # Читаем cmdline, если есть. Если нет - то второй параметр из stat и заключаем его в []
-        cmdl=`cat /proc/$i/cmdline  2>/dev/null`
+#        cmdl=`cat /proc/$i/cmdline  2>/dev/null`
+	cmdl=$(tr -d '\0' </proc/$i/cmdline)
+
         if [ -z "$cmdl" ]; then
 	    cmdl=${statt[1]}
     	    cmdl="${cmdl:1}"
