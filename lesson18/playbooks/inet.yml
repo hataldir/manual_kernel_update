@@ -29,6 +29,9 @@
          jump: MASQUERADE
          destination: '! 192.168.0.0/16'
 
+    - name: Import knocking
+      shell: iptables-restore < /vagrant/knocking
+
     - name: Save 
       shell: iptables-save > /etc/sysconfig/iptables
 
