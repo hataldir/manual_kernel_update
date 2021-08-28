@@ -93,58 +93,62 @@ Vagrant.configure("2") do |config|
         
         case boxname.to_s
         when "inetRouter"
-	    box.vm.provision "ansible" do |ansible|
-	        ansible.playbook = "playbooks/inet.yml"
-	        ansible.verbose = true
-	    end
+          box.vm.provision "shell", run: "always", inline: <<-SHELL
+            echo "net.ipv4.conf.all.forwarding=1" >>/etc/sysctl.conf
+            iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+	    iptables-save > /etc/sysconfig/iptables
+	    echo "iptables-restore < /etc/sysconfig/iptables" >>/etc/rc.local
+	    chmod +x /etc/rc.d/rc.local
+            echo "192.168.0.0/16 via 192.168.255.2 dev eth1" >> /etc/sysconfig/network-scripts/route-eth1
+	    reboot
+            SHELL
         when "centralRouter"
-	    box.vm.provision "ansible" do |ansible|
-	        ansible.playbook = "playbooks/central.yml"
-	        ansible.verbose = true
-	        ansible.extra_vars = {
-	            ip_gate: "192.168.255.1"
-	        }
-	    end
+          box.vm.provision "shell", run: "always", inline: <<-SHELL
+            echo "net.ipv4.conf.all.forwarding=1" >>/etc/sysctl.conf
+            echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0 
+            echo "DEFROUTE=yes" >> /etc/sysconfig/network-scripts/ifcfg-eth1 
+            echo "GATEWAY=192.168.255.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
+            echo "192.168.2.0/24 via 192.168.255.6 dev eth5" >> /etc/sysconfig/network-scripts/route-eth5
+            echo "192.168.1.0/24 via 192.168.255.10 dev eth6" >> /etc/sysconfig/network-scripts/route-eth6
+            reboot
+            SHELL
         when "office1Router"
-	    box.vm.provision "ansible" do |ansible|
-	        ansible.playbook = "playbooks/router.yml"
-	        ansible.verbose = true
-	        ansible.extra_vars = {
-	            ip_gate: "192.168.255.5"
-	        }
-	    end
+          box.vm.provision "shell", run: "always", inline: <<-SHELL
+            echo "net.ipv4.conf.all.forwarding=1" >>/etc/sysctl.conf
+            echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0 
+            echo "DEFROUTE=yes" >> /etc/sysconfig/network-scripts/ifcfg-eth1 
+            echo "GATEWAY=192.168.255.5" >> /etc/sysconfig/network-scripts/ifcfg-eth1
+            reboot
+            SHELL
         when "office2Router"
-	    box.vm.provision "ansible" do |ansible|
-	        ansible.playbook = "playbooks/router.yml"
-	        ansible.verbose = true
-	        ansible.extra_vars = {
-	            ip_gate: "192.168.255.9"
-	        }
-	    end
+          box.vm.provision "shell", run: "always", inline: <<-SHELL
+            echo "net.ipv4.conf.all.forwarding=1" >>/etc/sysctl.conf
+            echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0 
+            echo "DEFROUTE=yes" >> /etc/sysconfig/network-scripts/ifcfg-eth1 
+            echo "GATEWAY=192.168.255.9" >> /etc/sysconfig/network-scripts/ifcfg-eth1
+            reboot
+            SHELL
         when "centralServer"
-	    box.vm.provision "ansible" do |ansible|
-	        ansible.playbook = "playbooks/server.yml"
-	        ansible.verbose = true
-	        ansible.extra_vars = {
-	            ip_gate: "192.168.0.1"
-	        }
-	    end
+          box.vm.provision "shell", run: "always", inline: <<-SHELL
+            echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0 
+            echo "DEFROUTE=yes" >> /etc/sysconfig/network-scripts/ifcfg-eth1 
+            echo "GATEWAY=192.168.0.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
+            reboot
+            SHELL
         when "office1Server"
-	    box.vm.provision "ansible" do |ansible|
-	        ansible.playbook = "playbooks/server.yml"
-	        ansible.verbose = true
-	        ansible.extra_vars = {
-	            ip_gate: "192.168.2.65"
-	        }
-	    end
+          box.vm.provision "shell", run: "always", inline: <<-SHELL
+            echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0 
+            echo "DEFROUTE=yes" >> /etc/sysconfig/network-scripts/ifcfg-eth1 
+            echo "GATEWAY=192.168.2.65" >> /etc/sysconfig/network-scripts/ifcfg-eth1
+            reboot
+            SHELL
         when "office2Server"
-	    box.vm.provision "ansible" do |ansible|
-	        ansible.playbook = "playbooks/server.yml"
-	        ansible.verbose = true
-	        ansible.extra_vars = {
-	            ip_gate: "192.168.1.129"
-	        }
-	    end
+          box.vm.provision "shell", run: "always", inline: <<-SHELL
+            echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0 
+            echo "DEFROUTE=yes" >> /etc/sysconfig/network-scripts/ifcfg-eth1 
+            echo "GATEWAY=192.168.1.129" >> /etc/sysconfig/network-scripts/ifcfg-eth1
+            reboot
+            SHELL
         end
 
       end
