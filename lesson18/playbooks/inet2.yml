@@ -1,0 +1,65 @@
+---
+- name: Inet Router 2
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Turn rounting on
+      lineinfile:
+         path: /etc/sysctl.conf
+         create: yes
+         regexp: '^net.ipv4.conf.all.forwarding'
+         line: 'net.ipv4.conf.all.forwarding=1'
+      notify: restart system
+
+    - name: Routing on eth1
+      lineinfile:
+         path: /etc/sysconfig/network-scripts/route-eth1
+         create: yes
+         regexp: '^192.168.0.0'
+         line: '192.168.0.0/16 via 192.168.255.2 dev eth1'
+      notify: restart system
+
+    - name: Prerouting
+      iptables:
+         table: nat
+         chain: PREROUTING
+         jump: DNAT
+         destination: '10.0.2.15'
+         protocol: tcp
+         destination_port: '8080'
+         to_destination: '192.168.0.2:80'
+      notify: restart system
+
+    - name: Postrouting
+      iptables:
+         table: nat
+         chain: POSTROUTING
+         jump: SNAT
+         destination: '192.168.0.2'
+         protocol: tcp
+         destination_port: '80'
+         to_source: '192.168.255.3'
+      notify: restart system
+
+    - name: Save 
+      shell: iptables-save > /etc/sysconfig/iptables
+
+    - name: Restore
+      lineinfile:
+         path: /etc/rc.local
+         create: yes
+         regexp: '^iptables-restore'
+         line: 'iptables-restore < /etc/sysconfig/iptables'
+
+    - name: Executable
+      file:
+        path: /etc/rc.d/rc.local
+        mode: '+x'
+
+  handlers:
+    - name: restart system
+      reboot:
+
+

@@ -1,0 +1,51 @@
+---
+- name: Router
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Turn rounting on
+      lineinfile:
+         path: /etc/sysctl.conf
+         create: yes
+         regexp: '^net.ipv4.conf.all.forwarding'
+         line: 'net.ipv4.conf.all.forwarding=1'
+      notify: restart system
+
+    - name: Routing on eth1
+      lineinfile:
+         path: /etc/sysconfig/network-scripts/route-eth1
+         create: yes
+         regexp: '^192.168.0.0'
+         line: '192.168.0.0/16 via 192.168.255.2 dev eth1'
+      notify: restart system
+
+    - name: Masquerade
+      iptables:
+         table: nat
+         chain: POSTROUTING
+         out_interface: eth0
+         jump: MASQUERADE
+         destination: '! 192.168.0.0/16'
+
+    - name: Save 
+      shell: iptables-save > /etc/sysconfig/iptables
+
+    - name: Restore
+      lineinfile:
+         path: /etc/rc.local
+         create: yes
+         regexp: '^iptables-restore'
+         line: 'iptables-restore < /etc/sysconfig/iptables'
+
+    - name: Executable
+      file:
+        path: /etc/rc.d/rc.local
+        mode: '+x'
+
+  handlers:
+    - name: restart system
+      reboot:
+
+

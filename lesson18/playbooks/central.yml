@@ -1,0 +1,37 @@
+---
+- name: Central Router
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Turn default gateway on vagrant interfaсe off
+      lineinfile:
+         path: /etc/sysconfig/network-scripts/ifcfg-eth0
+         regexp: '^DEFROUTE'
+         line: 'DEFROUTE=no'
+      notify: restart system
+
+    - name: Turn default gateway on new interfaсe on
+      lineinfile:
+         path: /etc/sysconfig/network-scripts/ifcfg-eth1
+         regexp: '^DEFROUTE'
+         line: 'DEFROUTE=yes'
+      notify: restart system
+
+    - name: Set gateway
+      lineinfile:
+         path: /etc/sysconfig/network-scripts/ifcfg-eth1
+         regexp: '^GATEWAY'
+         line: 'GATEWAY={{ ip_gate }}'
+      notify: restart system
+
+    - name: Turn rounting on
+      lineinfile:
+         path: /etc/sysctl.conf
+         regexp: '^net.ipv4.conf.all.forwarding'
+         line: 'net.ipv4.conf.all.forwarding=1'
+      notify: restart system
+
+  handlers:
+    - name: restart system
+      reboot:
