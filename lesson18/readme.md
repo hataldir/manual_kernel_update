@@ -71,6 +71,7 @@ Are you sure you want to continue connecting (yes/no)?
 Проброс делается двумя правилами:
 
 iptables -t nat -A PREROUTING --dst 10.0.2.15 -p tcp --dport 8080 -j DNAT --to-destination 192.168.0.2:80
+
 iptables -t nat -A POSTROUTING --dst 192.168.0.2 -p tcp --dport 80 -j SNAT --to-source 192.168.255.3
 
 Правила добавляются в плейбуке inet2.yml.
