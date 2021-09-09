@@ -1,0 +1,17 @@
+password 123
+enable password 123
+
+interface eth1
+ ip ospf hello-interval 5
+ ip ospf dead-interval 10
+
+interface eth2
+ ip ospf hello-interval 5
+ ip ospf dead-interval 10
+
+router ospf
+ ospf router-id {{ router }}
+ network {{ net1 }} area 0
+ network {{ net2 }} area 0
+
+line vty
