@@ -1,0 +1,9 @@
+modprobe 8021q
+vconfig set_name_type DEV_PLUS_VID_NO_PAD
+vconfig add eth1 2
+ip add add 10.10.10.254/24 dev eth1.2
+ip link set dev eth1.2 up
+
+
+systemctl disable NetworkManager
+echo 8021q >> /etc/modprobe.d/8021q.conf

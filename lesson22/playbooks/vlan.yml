@@ -1,0 +1,42 @@
+---
+- name: Server
+  hosts: all
+  become: true
+
+  tasks:
+#    - name: Install epel
+#      yum:
+#        name: epel-release
+#        state: present
+
+#    - name: Install vconfig
+#      yum:
+#        name: vconfig
+#        state: present
+
+    - name: disable NM
+      service:
+        name: NetworkManager
+        enabled: no
+
+    - name: Modprobe
+      lineinfile:
+         path: /etc/modprobe.d/8021q.conf
+         create: yes
+         regexp: '^8021q'
+         line: '8021q'
+      notify: restart system
+
+    - name: Copy vlan config
+      template:
+        src: ../templates/ifcfg-vlan2.j2
+        dest: /etc/sysconfig/network-scripts/ifcfg-eth1.{{ vlan }}
+        mode: 0666
+      notify: restart system
+
+       
+
+
+  handlers:
+    - name: restart system
+      reboot:

@@ -1,0 +1,10 @@
+DEVICE=bond0
+BOOTPROTO=static
+ONBOOT=yes
+TYPE=bond
+IPADDR={{ ip_addr }}
+NETMASK=255.255.255.0
+BONDING_OPTS="mode=1 miimon=100 fail_over_mac=1"
+NM_CONTROLLED=NO
+BONDING_MASTER=YES
+

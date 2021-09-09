@@ -1,0 +1,90 @@
+---
+- name: Central Router
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Turn default gateway on vagrant interfaсe off
+      lineinfile:
+         path: /etc/sysconfig/network-scripts/ifcfg-eth0
+         regexp: '^DEFROUTE'
+         line: 'DEFROUTE=no'
+      notify: restart network
+
+    - name: Turn default gateway on new interfaсe on
+      lineinfile:
+         path: /etc/sysconfig/network-scripts/ifcfg-eth1
+         regexp: '^DEFROUTE'
+         line: 'DEFROUTE=yes'
+      notify: restart network
+
+    - name: Set gateway
+      lineinfile:
+         path: /etc/sysconfig/network-scripts/ifcfg-eth1
+         regexp: '^GATEWAY'
+         line: 'GATEWAY={{ ip_gate }}'
+      notify: restart network
+
+    - name: Turn rounting on
+      lineinfile:
+         path: /etc/sysctl.conf
+         regexp: '^net.ipv4.conf.all.forwarding'
+         line: 'net.ipv4.conf.all.forwarding=1'
+      notify: restart network
+
+    - name: Routing on eth5
+      lineinfile:
+         path: /etc/sysconfig/network-scripts/route-eth5
+         regexp: '^192.168.2.0'
+         create: yes
+         line: '192.168.2.0/24 via 192.168.255.6 dev eth5'
+      notify: restart network
+
+    - name: Routing on eth6
+      lineinfile:
+         path: /etc/sysconfig/network-scripts/route-eth6
+         create: yes
+         regexp: '^192.168.1.0'
+         line: '192.168.1.0/24 via 192.168.255.10 dev eth6'
+      notify: restart network
+
+#    - name: disable NM
+#      service:
+#        name: NetworkManager
+#        enabled: no
+
+
+    - name: Copy bond config
+      template:
+        src: ../templates/ifcfg-bond0.j2
+        dest: /etc/sysconfig/network-scripts/ifcfg-bond0
+        mode: 0666
+      notify: restart network
+
+    - name: Copy eth3 config
+      template:
+        src: ../templates/ifcfg-eth.j2
+        dest: /etc/sysconfig/network-scripts/ifcfg-eth3
+        mode: 0666
+      vars:
+        iface: 3
+      notify: restart network
+
+    - name: Copy eth4 config
+      template:
+        src: ../templates/ifcfg-eth.j2
+        dest: /etc/sysconfig/network-scripts/ifcfg-eth4
+        mode: 0666
+      vars:
+        iface: 4
+      notify: restart network
+
+
+  handlers:
+    - name: restart system
+      reboot:
+
+    - name: restart network
+      service: 
+         name: network
+         state: restarted
