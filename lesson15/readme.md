@@ -37,7 +37,7 @@ $UDPServerRun 514
 
 На сервере web:
 
-Перенаправляем логи nginx на сервер log. В nginx.conf в разделе server:
+Перенаправляем логи nginx на сервер log, а события с уровнем crit сохраняем также и локально. В nginx.conf в разделе server:
 
         error_log syslog:server=192.168.1.2:514,facility=local7,tag=nginx,severity=info;
 
