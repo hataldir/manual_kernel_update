@@ -1,0 +1,52 @@
+---
+- name: Server
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install epel
+      yum: 
+        name: epel-release
+        state: present
+
+    - name: Install nginx
+      yum: 
+        name: nginx
+        state: present
+      notify: start nginx
+
+    - name: Send audit to syslog
+      lineinfile:  path=/etc/audisp/plugins.d/syslog.conf regexp={{ item.regexp }} line={{ item.line }}
+      loop:
+         - { regexp: '^active =', line: 'active = yes' }
+         - { regexp: '^args =', line: 'args = LOG_INFO LOG_LOCAL6' }
+      notify: restart system
+
+    - name: Monitor nginx directory
+      lineinfile:  path=/etc/audit/rules.d/nginx.rules create=yes line='-w /etc/nginx -p rwxa -k test_watch'
+
+    - name: Send logs to server
+      lineinfile:  path=/etc/rsyslog.conf regexp={{ item.regexp }} line={{ item.line }}
+      loop:
+         - { regexp: '^local6.*', line: 'local6.* @192.168.1.2:514' }
+         - { regexp: '^\*.crit', line: '*.crit @192.168.1.2:514' }
+      notify: restart system
+
+    - name: Send nginx logs to server
+      lineinfile:  path=/etc/nginx/nginx.conf insertafter='^    server {' regexp={{ item.regexp }} line={{ item.line }}
+      loop:
+         - { regexp: 'error_log syslog', line: 'error_log syslog:server=192.168.1.2:514,facility=local7,tag=nginx,severity=info;' }
+         - { regexp: 'access_log syslog', line: 'access_log syslog:server=192.168.1.2:514,facility=local7,tag=nginx,severity=info main;' }
+         - { regexp: 'error_log /var', line: 'error_log /var/log/error.log crit;' }
+
+
+
+
+  handlers:
+    - name: restart system
+      reboot:
+
+    - name: start nginx
+      service: 
+        name: nginx
+        state: started

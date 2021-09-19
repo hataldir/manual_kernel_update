@@ -1,0 +1,34 @@
+---
+- name: Server
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Install epel
+      yum: 
+        name: epel-release
+        state: present
+
+    - name: Install rsyslog
+      yum: 
+        name: rsyslog
+        state: present
+
+    - name: Turn rsyslog on
+      lineinfile:  path=/etc/rsyslog.conf regexp={{ item.regexp }} line={{ item.line }}
+      loop:
+         - { regexp: '$ModLoad imudp', line: '$ModLoad imudp' }
+         - { regexp: '$UDPServerRun 514', line: '$UDPServerRun 514' }
+      notify: restart rsyslog
+
+
+
+  handlers:
+    - name: restart system
+      reboot:
+
+    - name: restart rsyslog
+      service: 
+        name: rsyslog
+        state: restarted
