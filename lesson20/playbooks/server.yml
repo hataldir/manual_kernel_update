@@ -1,0 +1,83 @@
+---
+- name: Server
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Turn rounting on
+      lineinfile:
+         path: /etc/sysctl.conf
+         regexp: '^net.ipv4.conf.all.forwarding'
+         line: 'net.ipv4.conf.all.forwarding=1'
+      notify: restart system
+
+    - name: Disable selinux
+      selinux:
+        state: disabled
+
+    - name: Copy ifcfg tun0
+      template:
+        src: ../templates/ifcfg-tun0.j2
+        dest: /etc/sysconfig/network-scripts/ifcfg-tun0
+        mode: 0666
+      notify: restart system
+
+    - name: Copy route tun0
+      template:
+        src: ../templates/route-tun0.j2
+        dest: /etc/sysconfig/network-scripts/route-tun0
+        mode: 0666
+      notify: restart system
+
+    - name: Install epel
+      yum:
+        name: epel-release
+        state: present
+
+    - name: Install openvpn
+      yum:
+        name: openvpn
+        state: present
+
+    - name: Copy conf
+      template:
+        src: ../templates/server.conf.j2
+        dest: /etc/openvpn/server.conf
+        mode: 0666
+      notify: restart openvpn
+   
+    - name: create directory 
+      file:
+         path: /etc/openvpn/ccd
+         state: directory
+
+    - name: Copy ccd
+      template:
+        src: ../templates/ccd.j2
+        dest: /etc/openvpn/ccd/client
+        mode: 0666
+      notify: restart openvpn
+
+    - name: copy certificates
+      copy:
+        src: ./files/server/
+        dest: /etc/openvpn
+        mode: 0644
+        owner: root     
+   
+    - name: Enable openvpn
+      service:
+         name:  openvpn@server
+         enabled: yes
+      notify: restart openvpn
+    
+
+  handlers:
+    - name: restart system
+      reboot:
+   
+    - name: restart openvpn
+      service:
+         name: openvpn@server
+         state: restarted
