@@ -16,18 +16,38 @@
       selinux:
         state: disabled
 
-    - name: Copy ifcfg tun0
-      template:
-        src: ../templates/ifcfg-tun0.j2
-        dest: /etc/sysconfig/network-scripts/ifcfg-tun0
-        mode: 0666
-      notify: restart system
+#    - name: Copy ifcfg tun0
+#      template:
+#        src: ../templates/ifcfg-tun0.j2
+#        dest: /etc/sysconfig/network-scripts/ifcfg-tun0
+#        mode: 0666
+#      notify: restart system
 
-    - name: Copy route tun0
+#    - name: Copy route tun0
+#      template:
+#        src: ../templates/route-tun0.j2
+#        dest: /etc/sysconfig/network-scripts/route-tun0
+#        mode: 0666
+#      notify: restart system
+
+    - name: Start tun
       template:
-        src: ../templates/route-tun0.j2
-        dest: /etc/sysconfig/network-scripts/route-tun0
-        mode: 0666
+        src: ../templates/workaround.sh
+        dest: /opt/tun
+        mode: 0777
+#      notify: restart system
+
+    - name: Create tun service
+      template:
+        src: ../templates/tun.service
+        dest: /etc/systemd/system
+        mode: 0777
+#      notify: restart system
+ 
+    - name: Enable tun service
+      service:
+         name:  tun
+         enabled: yes
       notify: restart system
 
     - name: Install epel
@@ -72,6 +92,15 @@
          enabled: yes
       notify: restart openvpn
     
+
+#    - name: Add ipip
+#      nmcli:
+#        type: ipip
+#        conn_name: tun2
+#        ip_tunnel_dev: eth1
+#        ip_tunnel_local: 192.168.1.1
+#        ip_tunnel_remote: 192.168.1.2
+#        state: present
 
   handlers:
     - name: restart system

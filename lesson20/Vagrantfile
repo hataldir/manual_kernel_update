@@ -49,6 +49,7 @@ Vagrant.configure("2") do |config|
 	        ansible.verbose = true
 	        ansible.extra_vars = {
                     my_inner_ip: "192.168.2.1",
+                    my_inner_ip2: "192.168.3.1",
                     my_outer_ip: "192.168.1.1",
 	            peer_inner_ip: "192.168.2.2",
 	            peer_outer_ip: "192.168.1.2"
@@ -60,6 +61,7 @@ Vagrant.configure("2") do |config|
 	        ansible.verbose = true
 	        ansible.extra_vars = {
                     my_inner_ip: "192.168.2.2",
+                    my_inner_ip2: "192.168.3.2",
                     my_outer_ip: "192.168.1.2",
 	            peer_inner_ip: "192.168.2.1",
 	            peer_outer_ip: "192.168.1.1"
