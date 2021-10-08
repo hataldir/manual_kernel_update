@@ -10,7 +10,7 @@
          path: /etc/sysctl.conf
          regexp: '^net.ipv4.conf.all.forwarding'
          line: 'net.ipv4.conf.all.forwarding=1'
-      notify: restart system
+#      notify: restart system
 
     - name: Disable selinux
       selinux:
@@ -48,7 +48,7 @@
       service:
          name:  tun
          enabled: yes
-      notify: restart system
+      notify: start tun
 
     - name: Install epel
       yum:
@@ -84,6 +84,8 @@
 #        state: present
 
   handlers:
-    - name: restart system
-      reboot:
+    - name: start tun
+      service: 
+        name: tun
+        state: restarted
    

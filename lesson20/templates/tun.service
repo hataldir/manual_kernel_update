@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 RemainAfterExit=yes
 ExecStart=/opt/tun
-TimeoutStartSec=10
+TimeoutStartSec=20
 
 [Install]
 WantedBy=default.target
