@@ -1,0 +1,15 @@
+[mysqld]
+server-id = {{ id }}
+gtid-mode = On
+enforce-gtid-consistency = On
+bind-address = 0.0.0.0
+log-bin = mysql-bin
+expire-logs-days = 7
+max-binlog-size = 16M
+binlog-format = "MIXED"
+
+{% if id == "2" %}
+read-only = ON
+replicate-ignore-table = bets.events_on_demand
+replicate-ignore-table = bets.v_same_event 
+{% endif %}

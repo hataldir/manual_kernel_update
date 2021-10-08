@@ -1,0 +1,71 @@
+- name: setup master
+  hosts: all
+  become: True
+  gather_facts: False
+  tasks:
+
+
+  - name: repository
+    yum:
+      name: https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+      state: present
+
+  - name: install mysql
+    yum:
+      name: Percona-Server-server-57
+      state: present
+    notify: restart mysql
+
+#  - name: copy config files
+#    template:
+#      src: "{{ item }}"
+#      dest: /etc/my.cnf.d/
+#    with_fileglob: templates/my.cnf.d/*
+#    notify: restart mysql
+
+  - name: config
+    template:
+        src: ../templates/my2.cnf.j2
+        dest: /etc/my.cnf.d/my2.cnf
+        mode: 0444
+
+  - name: start mysql
+    systemd:
+      name: mysql.service
+      state: restarted
+
+
+  - name: get password
+    shell: grep 'password is generated' /var/log/mysqld.log | awk '{print $11}' | head -1
+    register: password
+
+  - name: update password
+    shell: |
+      set -e
+      mysql --connect-expired-password -uroot -p'{{ password.stdout }}' -e 'ALTER USER USER() IDENTIFIED BY "{{ mysql_password }}"'
+    when: password.stdout
+
+  - name: create replication user
+    command: >
+      mysql
+        -uroot
+        -p'{{ mysql_password }}'
+        -e 'CREATE USER "replica" IDENTIFIED BY "{{ mysql_password }}"'
+
+  - name: set privileges
+    command: >
+      mysql
+        -uroot
+        -p'{{ mysql_password }}'
+        -e 'GRANT REPLICATION SLAVE ON *.* TO "replica"@"%" IDENTIFIED BY "{{ mysql_password }}";'
+
+  - name: import dmp
+    shell: |
+      mysql -uroot -p'{{ mysql_password }}' -e 'CREATE DATABASE bets'
+      mysql -uroot -p'{{ mysql_password }}' -D bets < /home/vagrant/bet.dmp 
+
+  handlers:
+  - name: restart mysql
+    systemd:
+      name: mysql.service
+      state: restarted
