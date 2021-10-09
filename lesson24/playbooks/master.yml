@@ -16,13 +16,6 @@
       state: present
     notify: restart mysql
 
-#  - name: copy config files
-#    template:
-#      src: "{{ item }}"
-#      dest: /etc/my.cnf.d/
-#    with_fileglob: templates/my.cnf.d/*
-#    notify: restart mysql
-
   - name: config
     template:
         src: ../templates/my2.cnf.j2
