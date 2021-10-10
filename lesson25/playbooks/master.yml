@@ -1,0 +1,84 @@
+- name: setup master
+  hosts: all
+  become: True
+  gather_facts: False
+  tasks:
+
+  - name: epel
+    yum:
+      name: epel-release
+      state: present
+
+  - name: barman
+    yum:
+      name: barman
+      state: present
+
+  - name: repository
+    yum:
+      name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+      state: present
+      validate_certs: no
+
+  - name: install postgres
+    yum:
+      name: postgresql14-server
+      state: present
+
+  - name: init
+    shell: /usr/pgsql-14/bin/postgresql-14-setup initdb
+    args:
+      creates: /var/lib/pgsql/14/data/postgresql.conf
+
+  - name: copy config
+    copy:
+      src: ./config/pg_hba.conf
+      dest: /var/lib/pgsql/14/data/
+      mode: 0600
+      owner: postgres
+
+  - name: copy config
+    copy:
+      src: ./config/postgresql.conf
+      dest: /var/lib/pgsql/14/data/
+      mode: 0600
+      owner: postgres
+
+  - name: copy ssh keys
+    copy:
+      src: postgres_keys/
+      dest: /var/lib/pgsql/.ssh
+      mode: 0600
+      owner: postgres
+      group: postgres
+
+
+
+  - name: enable
+    service:
+      name: postgresql-14
+      enabled: yes
+      state: restarted
+
+  - name: create slot
+    become_user: postgres
+    shell: psql postgres -c "SELECT pg_create_physical_replication_slot('pg_slot_1')"
+
+  - name: create replica user
+    become_user: postgres
+    shell: psql postgres -c "CREATE USER replica WITH REPLICATION PASSWORD 'Mypass1'"
+
+  - name: create barman user
+    become_user: postgres
+    shell: psql postgres -c "CREATE USER barman WITH SUPERUSER PASSWORD 'Mypass1'"
+
+  - name: create barman_2 user
+    become_user: postgres
+    shell: psql postgres -c "CREATE USER barman_2 WITH REPLICATION PASSWORD 'Mypass1'"
+
+  handlers:
+
+  - name: restart mysql
+    systemd:
+      name: mysql.service
+      state: restarted

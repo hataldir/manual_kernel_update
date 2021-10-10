@@ -1,0 +1,78 @@
+- name: setup master
+  hosts: all
+  become: True
+  gather_facts: False
+  tasks:
+
+  - name: repository
+    yum:
+      name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+      state: present
+      validate_certs: no
+
+  - name: install postgres
+    yum:
+      name: postgresql14-server
+      state: present
+
+  - name: init
+    shell: /usr/pgsql-14/bin/postgresql-14-setup initdb
+    args:
+      creates: /var/lib/pgsql/14/data/postgresql.conf
+
+  - name: delete
+    file:
+      path: "/var/lib/pgsql/14/data"
+      state: absent
+
+  - name: create empty
+    file:
+     path: "/var/lib/pgsql/14/data"
+     state: directory
+     owner: postgres
+     group: postgres
+     mode: '0700'
+
+  - name: replication
+    become_user: postgres
+    command: "pg_basebackup -X stream -h 192.168.1.1 -D /var/lib/pgsql/14/data/ -P -U replica"
+    notify: restart postgresql
+
+#  - name: copy recovery config
+#    copy:
+#      src: files/recovery.conf
+#      dest: /var/lib/pgsql/14/data/recovery.conf
+#      owner: postgres
+#      group: postgres
+#    notify: restart postgresql
+
+  - name: create standby file
+    copy:
+      content: ""
+      dest: /var/lib/pgsql/14/data/standby.signal
+      force: no
+      group: postgres
+      owner: postgres
+      mode: 0600
+
+  - name: copy config
+    copy:
+      src: ./config
+      dest: /var/lib/pgsql/14/data
+      mode: 0600
+      owner: postgres
+
+  - name: enable
+    service:
+      name: postgresql-14
+      enabled: yes
+      state: restarted
+
+
+
+  handlers:
+
+  - name: restart postgresql
+    systemd:
+      name: postgresql-14
+      state: restarted

@@ -1,0 +1,105 @@
+- name: setup master
+  hosts: all
+  become: True
+  gather_facts: False
+  tasks:
+
+  - name: epel
+    yum:
+      name: epel-release
+      state: present
+
+  - name: barman
+    yum:
+      name: barman
+      state: present
+
+
+  - name: repository
+    yum:
+      name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+      state: present
+      validate_certs: no
+
+  - name: install postgres
+    yum:
+      name: postgresql14-server
+      state: present
+
+  - name: init
+    shell: /usr/pgsql-14/bin/postgresql-14-setup initdb
+    args:
+      creates: /var/lib/pgsql/14/data/postgresql.conf
+
+  - name: copy config
+    copy:
+      src: ./config
+      dest: /var/lib/pgsql/14/data
+      mode: 0600
+      owner: postgres
+
+  - name: enable
+    service:
+      name: postgresql-14
+      enabled: yes
+      state: restarted
+
+  - name: copy pgpass
+    copy:
+      src: barman/pgpass
+      dest: /var/lib/barman/.pgpass
+      mode: 0600
+      owner: barman
+      group: barman
+
+  - name: copy barman config
+    copy:
+      src: barman/barman.conf
+      dest: /etc/barman.conf
+      mode: 0644
+
+  - name: copy backup config
+    copy:
+      src: barman/master.conf
+      dest: /etc/barman.d/master.conf
+      mode: 0644
+
+  - name: create ssh dir
+    file:
+      path: "/var/lib/barman/.ssh"
+      state: directory
+      owner: barman
+      group: barman
+
+  - name: copy ssh keys
+    copy: 
+      src: barman_keys/ 
+      dest: /var/lib/barman/.ssh/ 
+      mode: 0600 
+      owner: barman 
+      group: barman
+
+  - name: create replica slot
+    shell: barman receive-wal --create-slot 192.168.1.1
+
+
+
+#  - name: config
+#    template:
+#        src: ../templates/my2.cnf.j2
+#        dest: /etc/my.cnf.d/my2.cnf
+#        mode: 0444
+
+#  - name: start mysql
+#    systemd:
+#      name: mysql.service
+#      state: restarted
+
+
+
+  handlers:
+
+  - name: restart mysql
+    systemd:
+      name: mysql.service
+      state: restarted
