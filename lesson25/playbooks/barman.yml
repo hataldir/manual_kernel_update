@@ -84,22 +84,3 @@
 
 
 
-#  - name: config
-#    template:
-#        src: ../templates/my2.cnf.j2
-#        dest: /etc/my.cnf.d/my2.cnf
-#        mode: 0444
-
-#  - name: start mysql
-#    systemd:
-#      name: mysql.service
-#      state: restarted
-
-
-
-  handlers:
-
-  - name: restart mysql
-    systemd:
-      name: mysql.service
-      state: restarted

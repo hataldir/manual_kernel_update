@@ -76,9 +76,3 @@
     become_user: postgres
     shell: psql postgres -c "CREATE USER barman_2 WITH REPLICATION PASSWORD 'Mypass1'"
 
-  handlers:
-
-  - name: restart mysql
-    systemd:
-      name: mysql.service
-      state: restarted
