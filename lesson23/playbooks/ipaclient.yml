@@ -1,0 +1,37 @@
+---
+- name: Client
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Disable selinux
+      selinux:
+       state: disabled
+
+    - name: Hosts
+      lineinfile:  path=/etc/hosts line='192.168.1.1 ipaserver.example.local' insertbefore='127.0.1.1'
+
+    - name: Install epel
+      yum:
+        name: epel-release
+        state: present
+
+    - name: Install ipa-client
+      yum:
+#        name: freeipa-client
+        name: ipa-client
+        state: present
+
+    - name: command
+      command:
+        cmd: "ping -c 20 192.168.1.1"        
+    
+    - name: setup ipaclient
+      command:
+        cmd: "ipa-client-install -w 12345678 --hostname=ipaclient.example.local --realm=EXAMPLE.LOCAL --server=ipaserver.example.local -U --ip-address=192.168.1.1 -p admin --domain=example.local --hostname=ipaclient.example.local --mkhomedir --force-join"
+
+  handlers:
+    - name: restart system
+      reboot:
+   

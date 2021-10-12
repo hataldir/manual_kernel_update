@@ -1,0 +1,63 @@
+---
+- name: Server
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Disable selinux
+      selinux:
+        state: disabled
+
+    - name: Install epel
+      yum:
+        name: epel-release
+        state: present
+
+    - name: Install ipa-server
+      yum:  name={{ item }}  state=present
+      with_items:
+        - ipa-server
+        - ipa-server-dns    
+        - bind-dyndb-ldap
+ 
+    - name: Hostname
+      lineinfile:  path=/etc/hosts line='192.168.1.1 ipaserver.example.local' insertbefore='127.0.1.1'
+
+
+    - name: nss
+      yum:
+        name: nss
+        state: latest
+
+    - name: hostname
+      hostname: 
+        name: ipaserver.example.local
+
+    - name: dbus service restart
+      systemd:
+        name: dbus.service
+        state: restarted
+
+#    - name: setup ipaserver
+#      command: 
+#        cmd: "ipa-server-install -a 12345678 --hostname=ipaserver.example.local -r EXAMPLE.LOCAL -p 12345678 -n example.local -U --ip-address=192.168.1.1 --setup-dns --auto-forwarders --no-reverse"
+
+
+
+ 
+
+#  ipa-server-install -a 12345678 --hostname=ipaserver.example.local -r EXAMPLE.LOCAL -p 12345678 -n example.local -U
+
+# /etc/hosts: 192.168.1.1 ipaserver.example.local
+
+# /etc/hostname: ipaserver.example.local
+
+# yum update nss
+
+
+
+  handlers:
+    - name: restart system
+      reboot:
+   
