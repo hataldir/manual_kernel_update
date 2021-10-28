@@ -49,6 +49,6 @@ nodejs
 
 https://github.com/hataldir/otus-linux/blob/master/lesson27/screen8001.jpg
 
-https://github.com/hataldir/otus-linux/blob/master/lesson27/screnn8002.jpg
+https://github.com/hataldir/otus-linux/blob/master/lesson27/screen8002.jpg
 
 https://github.com/hataldir/otus-linux/blob/master/lesson27/screen8003.jpg
