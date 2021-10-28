@@ -41,7 +41,7 @@ python с необходимыми модулями, uwsgi, django
 
 nodejs
 
-В nodejs создаено приложение, возвращающее Hello World, в laravel и django - их дефолтные страницы.
+В nodejs создано приложение, возвращающее Hello World, в laravel и django - их дефолтные страницы.
 
 В nginx создано три сайта на разных портах. 8001 - laravel, 8002 - uwsgi, 8003 - nodejs.
 
