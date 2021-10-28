@@ -31,7 +31,7 @@ vagrant стэнд с проброшенными на локалхост пор�
 
 Состав стенда:  php-fpm (laravel), uwsgi (django), nodejs (react).
 
-Ансиблом устанавливаютсяЖ
+Ансиблом устанавливаются:
 
 nginx
 
@@ -45,4 +45,4 @@ nodejs
 
 В nginx создано три сайта на разных портах. 8001 - laravel, 8002 - uwsgi, 8003 - nodejs.
 
-Результаты выполнения в файлах screen8001.jpg, screnn8002.jpg, screen8003.jpg.
+Результаты выполнения в файлах https://github.com/hataldir/otus-linux/blob/master/lesson27/screen8001.jpg, https://github.com/hataldir/otus-linux/blob/master/lesson27/screen8002.jpg, https://github.com/hataldir/otus-linux/blob/master/lesson27/screen8003.jpg
