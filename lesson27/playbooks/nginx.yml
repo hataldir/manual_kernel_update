@@ -1,0 +1,53 @@
+---
+- hosts: all
+  become: true
+#  vars:
+#    ansible_python_interpreter: "/usr/bin/python3"
+
+  tasks:
+
+    - name: SELinux
+      selinux:
+        state: disabled
+
+    - name: NGINX | Install EPEL Repo package from standart repo
+      yum:
+        name: epel-release
+        state: present
+
+    - name: NGINX | Install NGINX package from EPEL Repo
+      yum:
+       name: nginx
+       state: latest
+#      notify:
+#       - restart nginx
+
+    - import_tasks: js.yml
+    - import_tasks: php.yml
+    - import_tasks: python.yml
+
+
+    - name: start nginx
+      systemd:
+        name: nginx
+        state: started
+        enabled: yes
+ 
+
+
+
+
+
+
+
+  handlers:
+    - name: restart nginx
+      systemd:
+        name: nginx
+        state: restarted
+        enabled: yes
+    
+    - name: reload nginx
+      systemd:
+        name: nginx
+        state: reloaded

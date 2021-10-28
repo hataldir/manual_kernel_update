@@ -1,0 +1,84 @@
+ - name: Install 
+   yum:  name={{ item }}  state=present
+   with_items: 
+      - gcc
+      - python3
+      - python3-pip
+      - python3-devel
+      - python3-virtualenv
+      - python3-setuptools
+#      - tcl-dev
+#      - tk-dev
+#      - python3-tk
+#      - git
+#      - virtualenv
+
+ - name: Pip
+   pip: name=setuptools  state=present executable=pip3
+
+ - name: Pip
+   pip: name={{ item }}  state=present      executable=pip3
+   with_items:
+     - django
+     - uwsgi 
+
+
+
+
+
+
+ - name: User
+   user:
+    name: django
+    group: nginx
+    shell: /bin/bash
+    home: /var/www/django
+    system: yes
+
+ - name: Django directory
+   file:
+    path: /var/www/django
+    state: directory
+    mode: '0770'
+    owner: django
+    group: nginx
+
+ - name: Django project
+   shell: |
+    cd /var/www/django
+    /usr/local/bin/django-admin startproject homework
+    cd /var/www/django/homework
+    python3 manage.py migrate
+   become_user: django
+
+ - name: Allow connects
+   lineinfile:
+    path: /var/www/django/homework/homework/settings.py
+    regexp: '^ALLOWED_HOSTS'
+    line: "ALLOWED_HOSTS = ['ekb-git2']"
+   become_user: django
+
+ - name: Uwsgi directory
+   file:
+    path: /etc/uwsgi/sites
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+ - name: Uwsgi config
+   copy: src=./files/python/mysite_uwsgi.ini dest=/etc/uwsgi/sites/mysite_uwsgi.ini
+
+ - name: Uwsgi systemd
+   copy: src=./files/python/uwsgi.service dest=/etc/systemd/system/uwsgi.service
+
+ - name: Uwsgi restart
+   systemd:
+    name: uwsgi
+    state: restarted
+    daemon-reload: yes
+    enabled: yes
+
+ - name: Uwsgi config for nginx
+   copy: src=./files/python/uwsgi.conf dest=/etc/nginx/conf.d/uwsgi.conf
+
