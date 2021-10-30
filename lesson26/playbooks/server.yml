@@ -1,0 +1,90 @@
+---
+- name: Server
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Disable selinux
+      selinux:
+        state: disabled
+
+    - name: Install epel
+      yum:
+        name: epel-release
+        state: present
+
+    - name: Install borg
+      yum:
+        name: borgbackup
+        state: present
+
+    - name: Users create
+      user: 
+          name: 'borg'
+          state: present 
+          password: ''
+
+    - name: Create a directory if it does not exist
+      file:
+       path: /home/borg/.ssh
+       state: directory
+       mode: '0700'
+       owner: borg        
+
+    - name: copy key
+      copy:
+        src: ./files/id_rsa.pub
+        dest: /home/borg/.ssh/authorized_keys
+        mode: 0600
+        owner: borg
+
+    - name: Create a directory if it does not exist
+      file:
+       path: /var/backup
+       state: directory
+       mode: '0777'
+       owner: borg
+
+    - name: Partition
+      parted:
+       device: /dev/sdb
+       number: 1
+       flags: [ lvm ]
+       state: present
+
+    - name: Format
+      filesystem:
+       fstype: ext2
+       dev: /dev/sdb1
+
+    - name: Mount
+      mount:
+       fstype: ext2
+       src: /dev/sdb1
+       path: /var/backup
+       state: mounted
+
+    - name: again
+      file:
+       path: /var/backup
+       state: directory
+       mode: '0777'
+       owner: borg
+
+    - name: copy script
+      copy:
+        src: ./files/init.sh
+        dest: /home/borg/init.sh
+        mode: 0777
+        owner: borg
+
+    - name: init
+      become_user: borg
+      command:
+        cmd: "/home/borg/init.sh"
+
+  handlers:
+    - name: restart system
+      reboot:
+   

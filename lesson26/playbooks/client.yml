@@ -1,0 +1,57 @@
+---
+- name: Client
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Disable selinux
+      selinux:
+        state: disabled
+
+    - name: Install epel
+      yum:
+        name: epel-release
+        state: present
+
+    - name: Install borg
+      yum:
+        name: borgbackup
+        state: present
+
+
+    - name: copy script
+      copy:
+        src: ./files/backup.sh
+        dest: /opt
+        mode: 0755
+        owner: root
+
+    - name: crontab
+      cron:
+        name: "backup"
+        minute: "*/5"
+        user: root
+        job: /opt/backup.sh
+
+
+    - name: Create a directory if it does not exist
+      file:
+       path: /root/.ssh
+       state: directory
+       mode: '0700'
+       owner: root
+
+    - name: copy key
+      copy:
+        src: ./files/id_rsa
+        dest: /root/.ssh/id_rsa
+        mode: 0600
+        owner: root
+
+
+
+  handlers:
+    - name: restart system
+      reboot:
+   
