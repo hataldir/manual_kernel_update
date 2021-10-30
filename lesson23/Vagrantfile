@@ -10,13 +10,13 @@ MACHINES = {
         :ram => 2048,
         :cpu => 4,
         :net => [
-                   {ip: '192.168.1.1', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "vlan1"},
+                   {ip: '192.168.10.10', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "vlan1"},
                 ]
   },
   :ipaclient => {
         :box_name => "centos/7",
         :net => [
-                   {ip: '192.168.1.2', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "vlan1"},
+                   {ip: '192.168.10.11', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "vlan1"},
                 ]
   },
 
@@ -29,7 +29,7 @@ Vagrant.configure("2") do |config|
     config.vm.define boxname do |box|
 
 	box.vm.provider "virtualbox" do |vb|
-	    vb.memory = "2048"
+	    vb.memory = "4096"
 	end
 
         box.vm.box = boxconfig[:box_name]

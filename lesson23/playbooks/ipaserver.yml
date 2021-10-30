@@ -22,7 +22,7 @@
         - bind-dyndb-ldap
  
     - name: Hostname
-      lineinfile:  path=/etc/hosts line='192.168.1.1 ipaserver.example.local' insertbefore='127.0.1.1'
+      lineinfile:  path=/etc/hosts line='192.168.10.10 ipaserver.example.local' insertbefore='127.0.1.1'
 
 
     - name: nss
@@ -39,9 +39,9 @@
         name: dbus.service
         state: restarted
 
-#    - name: setup ipaserver
-#      command: 
-#        cmd: "ipa-server-install -a 12345678 --hostname=ipaserver.example.local -r EXAMPLE.LOCAL -p 12345678 -n example.local -U --ip-address=192.168.1.1 --setup-dns --auto-forwarders --no-reverse"
+    - name: setup ipaserver
+      command: 
+        cmd: "ipa-server-install -a 12345678 --hostname=ipaserver.example.local -r EXAMPLE.LOCAL -p 12345678 -n example.local -U --ip-address=192.168.10.10 --setup-dns --auto-forwarders --no-reverse"
 
 
 
