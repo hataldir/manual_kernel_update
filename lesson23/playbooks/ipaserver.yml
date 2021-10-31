@@ -41,7 +41,8 @@
 
     - name: setup ipaserver
       command: 
-        cmd: "ipa-server-install -a 12345678 --hostname=ipaserver.example.local -r EXAMPLE.LOCAL -p 12345678 -n example.local -U --ip-address=192.168.10.10 --setup-dns --auto-forwarders --no-reverse"
+#        cmd: "ipa-server-install -a 12345678 --hostname=ipaserver.example.local -r EXAMPLE.LOCAL -p 12345678 -n example.local -U --ip-address=192.168.10.10 --setup-dns --auto-forwarders --no-reverse"
+        cmd: "ipa-server-install -a 12345678 -r EXAMPLE.LOCAL -p 12345678 -n example.local -U --ip-address=192.168.10.10 --setup-dns --auto-forwarders --no-reverse"
 
 
 
